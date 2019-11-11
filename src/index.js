@@ -39,23 +39,26 @@ const getSHA1 = bdriveURL => {
   return url.host
 }
 
-const download = async (bdriveURL, { dir = './tmp', parallel = 16 } = {}) => {
+const getMeta = async bdriveURL => {
   const index = getSHA1(bdriveURL)
-
-  await mkdir(dir, { recursive: true })
-
   const { filename, sha1, block } = await processMeta(index)
-
-  const tempFilePath = join(dir, sha1)
-  const finalFilePath = join(dir, filename)
-  const handle = await open(tempFilePath, 'w')
-
   const list = block
     .reduce((blocks, { url, size, sha1 }) => {
       const { position: lastPosition = 0, size: lastSize = 0 } = blocks[0] || {}
       return [{ url, size, sha1, position: lastPosition + lastSize }, ...blocks]
     }, [])
     .reverse()
+  return { filename, sha1, block, list }
+}
+
+const download = async (bdriveURL, { dir = './tmp', parallel = 16 } = {}) => {
+  const { filename, sha1, list } = await getMeta(bdriveURL)
+
+  await mkdir(dir, { recursive: true })
+
+  const tempFilePath = join(dir, sha1)
+  const finalFilePath = join(dir, filename)
+  const handle = await open(tempFilePath, 'w')
 
   await saver({ list, handle, parallel })
   await rename(tempFilePath, finalFilePath)
@@ -64,5 +67,7 @@ const download = async (bdriveURL, { dir = './tmp', parallel = 16 } = {}) => {
 }
 
 module.exports = {
-  download
+  download,
+  getMeta,
+  extract
 }
