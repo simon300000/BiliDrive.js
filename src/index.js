@@ -16,7 +16,7 @@ const extract = async url => {
 }
 
 const processMeta = async sha1 => {
-  const body = await extract(`http://i0.hdslb.com/bfs/album/${sha1}.x-ms-bmp`)
+  const body = await extract(`https://i0.hdslb.com/bfs/album/${sha1}.x-ms-bmp`)
   return JSON.parse(String(body))
 }
 
