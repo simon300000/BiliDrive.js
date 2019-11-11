@@ -14,11 +14,11 @@ const processMeta = async sha1 => {
   return JSON.parse(String(body))
 }
 
-const saver = ({ list, handler, parallel }) => {
+const saver = ({ list, handle, parallel }) => {
   const waiting = list.map(({ url, position }) => async () => {
     console.log(url)
     const buf = await extract(url)
-    await handler.write(buf, 0, buf.length, position)
+    await handle.write(buf, 0, buf.length, position)
   })
   return Array(parallel)
     .fill()
@@ -31,19 +31,24 @@ const saver = ({ list, handler, parallel }) => {
     .reduce((a, b) => Promise.all([a, b]))
 }
 
-const download = async (bdriveURL, { dir = './tmp', parallel = 16 } = {}) => {
+const getSHA1 = bdriveURL => {
   const url = new URL(bdriveURL)
   if (url.protocol !== 'bdrive:') {
     throw new Error('Protocol must be bdrive:')
   }
+  return url.host
+}
+
+const download = async (bdriveURL, { dir = './tmp', parallel = 16 } = {}) => {
+  const index = getSHA1(bdriveURL)
 
   await mkdir(dir, { recursive: true })
 
-  const { filename, sha1, block } = await processMeta(url.host)
+  const { filename, sha1, block } = await processMeta(index)
 
   const tempFilePath = join(dir, sha1)
   const finalFilePath = join(dir, filename)
-  const handler = await open(tempFilePath, 'w')
+  const handle = await open(tempFilePath, 'w')
 
   const list = block
     .reduce((blocks, { url, size, sha1 }) => {
@@ -52,8 +57,9 @@ const download = async (bdriveURL, { dir = './tmp', parallel = 16 } = {}) => {
     }, [])
     .reverse()
 
-  await saver({ list, handler, parallel })
+  await saver({ list, handle, parallel })
   await rename(tempFilePath, finalFilePath)
+  await handle.close()
   return finalFilePath
 }
 
