@@ -1,0 +1,24 @@
+{
+  "name": "bilidrive",
+  "version": "0.0.0",
+  "description": "BiliDrive",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simon300000/BiliDrive.js.git"
+  },
+  "keywords": [
+    "bilibili",
+    "bilidrive",
+    "drive"
+  ],
+  "author": "simon3000 <simon3000@163.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/simon300000/BiliDrive.js/issues"
+  },
+  "homepage": "https://github.com/simon300000/BiliDrive.js#readme"
+}
