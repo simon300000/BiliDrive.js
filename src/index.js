@@ -54,6 +54,7 @@ const download = async (bdriveURL, { dir = './tmp', parallel = 16 } = {}) => {
 
   await saver({ list, handler, parallel })
   await rename(tempFilePath, finalFilePath)
+  return finalFilePath
 }
 
 module.exports = {
