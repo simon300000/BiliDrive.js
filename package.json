@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/simon300000/BiliDrive.js/issues"
   },
-  "homepage": "https://github.com/simon300000/BiliDrive.js#readme"
+  "homepage": "https://github.com/simon300000/BiliDrive.js#readme",
+  "dependencies": {
+    "got": "^9.6.0"
+  }
 }
