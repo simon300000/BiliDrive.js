@@ -2,6 +2,12 @@ const { mkdir, open, rename } = require('fs').promises
 const { join } = require('path')
 const got = require('got')
 
+/**
+ * 下载并剪裁目标url
+ * @method extract
+ * @param  {string}  url     url
+ * @return {Promise<Buffer>} 目标URL剪裁之后的buffer
+ */
 const extract = async url => {
   const { body } = await got(url, { encoding: null })
   // const headerLength = body.readUInt8(10)
@@ -39,6 +45,12 @@ const getSHA1 = bdriveURL => {
   return url.host
 }
 
+/**
+ * 通过bdrive链接获取URL
+ * @method getMeta
+ * @param  {String} bdriveURL bdrive协议url
+ * @return {Promise<{filename:String,sha1:String,block:{url:String,size:Number,sha1:String}[],list:{url:String,size:Number,sha1:String,position:Number}[]}>} META
+ */
 const getMeta = async bdriveURL => {
   const index = getSHA1(bdriveURL)
   const { filename, sha1, block } = await processMeta(index)
@@ -51,6 +63,13 @@ const getMeta = async bdriveURL => {
   return { filename, sha1, block, list }
 }
 
+/**
+ * 在指定目录中下载文件
+ * @method download
+ * @param  {String}  bdriveURL                           bdrive协议url
+ * @param  {Object}  [options={dir='./tmp',parallel=16}] 设置
+ * @return {Promise<String>}                             下载完成后的文件位置
+ */
 const download = async (bdriveURL, { dir = './tmp', parallel = 16 } = {}) => {
   const { filename, sha1, list } = await getMeta(bdriveURL)
 
