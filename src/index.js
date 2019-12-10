@@ -9,7 +9,7 @@ const got = require('got')
  * @return {Promise<Buffer>} 目标URL剪裁之后的buffer
  */
 const extract = async url => {
-  const { body } = await got(url, { encoding: null })
+  const body = await got(url).buffer()
   // const headerLength = body.readUInt8(10)
   const headerLength = 62
   return body.slice(headerLength)
